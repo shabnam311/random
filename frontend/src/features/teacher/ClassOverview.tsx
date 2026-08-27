@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppShell } from '../../components/layout/AppShell';
 import { StatusSeal, SubmissionStatus } from '../../components/ui/StatusSeal';
+import { downloadCSV } from '../../lib/export';
 import './ClassOverview.css';
 
 interface GroupData {
@@ -15,6 +16,7 @@ interface GroupData {
 
 export function ClassOverview() {
   const [filter, setFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const groups: GroupData[] = [
     { id: '1', name: 'Delta Four', members: 'Rhea Sen, Dev Prabhu, Amara Ng', status: 'draft', fileCount: 3, lastActivity: '2 hrs ago' },
@@ -23,6 +25,30 @@ export function ClassOverview() {
     { id: '4', name: 'Culvert Six', members: 'Théo Marchand', status: 'not-started', fileCount: 0, lastActivity: '—' },
     { id: '5', name: 'Greywater Studio', members: 'Ines Bauer, Ravi Chandran', status: 'reviewed', statusLabel: 'Reviewed · B+', fileCount: 7, lastActivity: '3 days ago' },
   ];
+
+  const handleExport = () => {
+    const exportData = groups.map(g => ({
+      'Group Name': g.name,
+      'Members': g.members,
+      'Status': g.status,
+      'Grade/Status Label': g.statusLabel || '',
+      'Files': g.fileCount,
+      'Last Activity': g.lastActivity
+    }));
+    downloadCSV(exportData, 'class_export.csv');
+  };
+
+  const filteredGroups = groups.filter(g => {
+    // Search match
+    const searchMatch = g.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        g.members.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter match
+    const filterMatch = filter === 'All' || 
+                        g.status.replace('-', ' ') === filter.toLowerCase();
+
+    return searchMatch && filterMatch;
+  });
 
   return (
     <AppShell activeTab="Urban Water Systems — Overview">
@@ -33,20 +59,25 @@ export function ClassOverview() {
             <h1>Urban Water Systems</h1>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="btn btn-secondary">Export CSV</button>
+            <button className="btn btn-secondary" onClick={handleExport}>Export CSV</button>
             <button className="btn btn-primary">Edit project</button>
           </div>
         </div>
 
         <div className="stat-strip">
-          <div className="stat-box"><div className="num">15</div><div className="lbl">Groups</div></div>
-          <div className="stat-box"><div className="num">12</div><div className="lbl">Submitted</div></div>
-          <div className="stat-box"><div className="num">9</div><div className="lbl">On time</div></div>
-          <div className="stat-box"><div className="num">3</div><div className="lbl">Late</div></div>
+          <div className="stat-box"><div className="num">{groups.length}</div><div className="lbl">Groups</div></div>
+          <div className="stat-box"><div className="num">{groups.filter(g => g.status === 'submitted' || g.status === 'reviewed').length}</div><div className="lbl">Submitted</div></div>
+          <div className="stat-box"><div className="num">{groups.filter(g => g.status !== 'late' && g.status !== 'not-started').length}</div><div className="lbl">On time</div></div>
+          <div className="stat-box"><div className="num">{groups.filter(g => g.status === 'late').length}</div><div className="lbl">Late</div></div>
         </div>
 
         <div className="toolbar">
-          <input className="search-input" placeholder="Search by group or student name" />
+          <input 
+            className="search-input" 
+            placeholder="Search by group or student name" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           {['All', 'Not started', 'Draft', 'Submitted', 'Late'].map(f => (
             <div 
               key={f} 
@@ -69,15 +100,23 @@ export function ClassOverview() {
             </tr>
           </thead>
           <tbody>
-            {groups.map(g => (
-              <tr key={g.id}>
-                <td className="gname">{g.name}</td>
-                <td className="members">{g.members}</td>
-                <td><StatusSeal status={g.status} label={g.statusLabel} /></td>
-                <td className="num mono">{g.fileCount}</td>
-                <td className="mono">{g.lastActivity}</td>
+            {filteredGroups.length === 0 ? (
+              <tr>
+                <td colSpan={5} style={{ textAlign: 'center', color: 'var(--ink-soft)' }}>
+                  No groups match your search filters.
+                </td>
               </tr>
-            ))}
+            ) : (
+              filteredGroups.map(g => (
+                <tr key={g.id}>
+                  <td className="gname">{g.name}</td>
+                  <td className="members">{g.members}</td>
+                  <td><StatusSeal status={g.status} label={g.statusLabel} /></td>
+                  <td className="num mono">{g.fileCount}</td>
+                  <td className="mono">{g.lastActivity}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
