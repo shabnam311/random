@@ -1,0 +1,1 @@
+function e(e,t=Date.now()){let n=new Date(e).getTime();return isNaN(n)?`submitted`:t>n+3e5?`late`:`submitted`}export{e as computeSubmissionStatus};
