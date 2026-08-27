@@ -1,41 +1,57 @@
 import React, { useState } from 'react';
+import { groupApi } from '../../lib/api/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Comment {
   id: string;
-  author: string;
-  role: 'Teacher' | 'Student';
+  author_id: string;
   body: string;
-  timestamp: string;
+  created_at: string;
 }
 
-export function CommentThread() {
-  const [comments] = useState<Comment[]>([
-    {
-      id: '1',
-      author: 'S. Kapoor',
-      role: 'Teacher',
-      body: 'Excellent site analysis, but please clarify the rainfall data sources in your final presentation.',
-      timestamp: '2 hours ago'
-    }
-  ]);
+interface CommentThreadProps {
+  comments: Comment[];
+  groupId: string;
+  onCommentAdded: () => void;
+}
+
+export function CommentThread({ comments, groupId, onCommentAdded }: CommentThreadProps) {
   const [newComment, setNewComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
+
+  const handlePost = async () => {
+    if (!newComment.trim() || !user) return;
+    setIsSubmitting(true);
+    try {
+      await groupApi.addComment(groupId, newComment.trim(), user.id);
+      setNewComment('');
+      onCommentAdded();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to post comment.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="panel" style={{ marginTop: '20px' }}>
       <h3>Feedback & Comments</h3>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '20px' }}>
+        {comments.length === 0 && <p style={{ color: 'var(--ink-soft)', fontSize: '13.5px' }}>No comments yet.</p>}
         {comments.map(c => (
           <div key={c.id} style={{ borderBottom: '1px solid var(--hairline)', paddingBottom: '12px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <strong style={{ fontSize: '13.5px' }}>{c.author}</strong>
+                <strong style={{ fontSize: '13.5px' }}>Teacher</strong>
                 <span style={{ fontSize: '11px', padding: '2px 6px', background: 'var(--surface)', borderRadius: '4px', color: 'var(--ink-soft)' }}>
-                  {c.role}
+                  Teacher
                 </span>
               </div>
               <span style={{ fontSize: '11.5px', color: 'var(--ink-soft)', fontFamily: 'var(--font-mono)' }}>
-                {c.timestamp}
+                {new Date(c.created_at).toLocaleDateString()}
               </span>
             </div>
             <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--ink)' }}>{c.body}</p>
@@ -48,6 +64,7 @@ export function CommentThread() {
           placeholder="Leave feedback for this group..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
+          disabled={isSubmitting}
           style={{
             width: '100%',
             padding: '12px',
@@ -60,7 +77,9 @@ export function CommentThread() {
           }}
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="btn btn-primary btn-sm">Post comment</button>
+          <button className="btn btn-primary btn-sm" onClick={handlePost} disabled={isSubmitting || !newComment.trim()}>
+            {isSubmitting ? 'Posting...' : 'Post comment'}
+          </button>
         </div>
       </div>
     </div>

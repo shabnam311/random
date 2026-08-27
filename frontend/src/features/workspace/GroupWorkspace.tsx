@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { AppShell } from '../../components/layout/AppShell';
 import { FileBrowser } from '../files/FileBrowser';
 import { TeamPanel } from './TeamPanel';
@@ -6,35 +7,74 @@ import { ActivityPanel } from './ActivityPanel';
 import { SubmissionPanel } from './SubmissionPanel';
 import { CommentThread } from '../teacher/CommentThread';
 import { GradeControl } from '../teacher/GradeControl';
+import { groupApi } from '../../lib/api/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import './GroupWorkspace.css';
 
 export function GroupWorkspace() {
-  const isTeacher = true; // Hardcoded for demo/Milestone 4
+  const { groupId } = useParams<{ groupId: string }>();
+  const { user } = useAuth();
+  
+  const [group, setGroup] = useState<any>(null);
+  const [files, setFiles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const demoFiles: any[] = [];
-  const demoMembers: any[] = [];
-  const demoActivity: any[] = [];
+  // In a real app we'd fetch this from the user's role in the class
+  const isTeacher = true; // Placeholder for UI layout logic
+
+  const loadData = async () => {
+    if (!groupId) return;
+    try {
+      const groupData = await groupApi.getGroupDetails(groupId);
+      setGroup(groupData);
+      const filesData = await groupApi.getFiles(groupId);
+      setFiles(filesData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [groupId]);
+
+  if (isLoading) {
+    return <AppShell><div style={{ padding: '40px', textAlign: 'center' }}>Loading workspace...</div></AppShell>;
+  }
+
+  if (!group) {
+    return <AppShell><div style={{ padding: '40px', textAlign: 'center' }}>Group not found.</div></AppShell>;
+  }
+
+  const projectTitle = group.projects?.title || 'Unknown Project';
 
   return (
-    <AppShell activeTab="Urban Water Systems">
+    <AppShell activeTab={projectTitle}>
       <div className="page">
         <div className="brief-box">
           <span className="eyebrow">Project brief</span>
-          <h3 style={{ fontSize: '16px', marginTop: '4px' }}>Urban Water Systems — Group: Delta Four</h3>
-          <p>Design a stormwater management proposal for a 2-block urban site. Submit your report, diagrams, and supporting data. Due Friday, 6:00 PM.</p>
+          <h3 style={{ fontSize: '16px', marginTop: '4px' }}>{projectTitle} — Group: {group.name}</h3>
+          <p>{group.projects?.description}</p>
         </div>
 
         <div className="workspace-grid">
           <div>
-            <FileBrowser files={demoFiles} />
-            <SubmissionPanel status="draft" statusLabel="Draft — not yet submitted" />
-            {isTeacher && <CommentThread />}
+            <FileBrowser files={files} groupId={group.id} onUploadSuccess={loadData} />
+            <SubmissionPanel 
+              status={group.status} 
+              statusLabel={group.statusLabel} 
+              groupId={group.id} 
+              onStatusChange={loadData} 
+            />
+            {isTeacher && <CommentThread comments={group.comments || []} groupId={group.id} onCommentAdded={loadData} />}
           </div>
 
           <div>
-            <TeamPanel groupName="Delta Four" members={demoMembers} />
-            <ActivityPanel activities={demoActivity} />
-            {isTeacher && <GradeControl currentStatus="draft" />}
+            <TeamPanel groupName={group.name} members={[]} />
+            <ActivityPanel activities={group.activity_log || []} />
+            {isTeacher && <GradeControl currentStatus={group.status} groupId={group.id} onGradeUpdated={loadData} />}
           </div>
         </div>
       </div>
