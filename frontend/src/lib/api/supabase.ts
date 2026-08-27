@@ -59,10 +59,11 @@ export const classesApi = {
   },
   
   async getTeacherOverview(classId: string) {
+    // We join through projects to filter groups by class_id
     const { data, error } = await supabase
       .from('groups')
-      .select('*, group_members(*, users(*))')
-      .eq('project_id', classId); // Simplified relationship for example
+      .select('*, group_members(*, users(*)), projects!inner(class_id, title)')
+      .eq('projects.class_id', classId);
     if (error) throw error;
     return data;
   }
@@ -142,11 +143,23 @@ export const groupApi = {
   },
 
   async submitProject(groupId: string) {
-    // In a production app, this would ideally be an RPC call to verify the deadline server-side.
-    // We update the status to 'submitted' here as a client-driven action.
+    const { data: groupData, error: fetchError } = await supabase
+      .from('groups')
+      .select('projects(deadline)')
+      .eq('id', groupId)
+      .single();
+    if (fetchError) throw fetchError;
+
+    // We import dynamically to avoid top-level import issues if we don't have it imported at the top
+    const { computeSubmissionStatus } = await import('../utils/deadline');
+    
+    // Fallback if projects relationship isn't returned exactly this way
+    const deadlineStr = (groupData as any)?.projects?.deadline || (groupData as any)?.projects?.[0]?.deadline;
+    const newStatus = deadlineStr ? computeSubmissionStatus(deadlineStr) : 'submitted';
+
     const { data, error } = await supabase
       .from('groups')
-      .update({ status: 'submitted' }) // Should ideally check deadline UTC and set 'late' if appropriate
+      .update({ status: newStatus })
       .eq('id', groupId)
       .select()
       .single();
@@ -164,6 +177,22 @@ export const groupApi = {
         body: body
       });
     if (error) throw error;
+
+    // Trigger notifications for group members
+    const { data: members } = await supabase.from('group_members').select('user_id').eq('group_id', groupId);
+    if (members) {
+      const notifications = members
+        .filter(m => m.user_id !== authorId)
+        .map(m => ({
+          user_id: m.user_id,
+          message: 'New comment posted in your group.',
+          type: 'feedback',
+          link: `/classes/default/group/${groupId}` // Placeholder
+        }));
+      if (notifications.length > 0) {
+        await supabase.from('notifications').insert(notifications);
+      }
+    }
   },
 
   async updateGrade(groupId: string, gradeStr: string, status: string, graderId: string) {
@@ -184,6 +213,20 @@ export const groupApi = {
           grade_value: gradeStr
         });
       if (gradeError) throw gradeError;
+    }
+
+    // Trigger notification
+    const { data: members } = await supabase.from('group_members').select('user_id').eq('group_id', groupId);
+    if (members) {
+      const notifications = members.map(m => ({
+        user_id: m.user_id,
+        message: `Status updated to ${status}${gradeStr ? ' with grade ' + gradeStr : ''}`,
+        type: 'status',
+        link: `/classes/default/group/${groupId}`
+      }));
+      if (notifications.length > 0) {
+        await supabase.from('notifications').insert(notifications);
+      }
     }
   }
 };

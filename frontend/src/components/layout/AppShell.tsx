@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { NotificationPanel } from './NotificationPanel';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/api/supabase';
 import './AppShell.css';
 
 interface AppShellProps {
@@ -8,18 +10,35 @@ interface AppShellProps {
   activeTab?: string;
 }
 
-export function AppShell({ children, activeTab = 'My Classes' }: AppShellProps) {
+export function AppShell({ children, activeTab = 'Dashboard' }: AppShellProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const isClassesView = location.pathname === '/classes';
   const [showNotifs, setShowNotifs] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<any[]>([]);
 
-  const [notifications, setNotifications] = useState([
-    { id: '1', type: 'feedback' as const, message: 'S. Kapoor left feedback on Urban Water Systems.', timeLabel: '2 hours ago', isRead: false, link: '/classes/1/group/1' },
-    { id: '2', type: 'status' as const, message: 'Status updated to Reviewed · B+', timeLabel: '3 days ago', isRead: true, link: '/classes/1/group/1' }
-  ]);
+  useEffect(() => {
+    if (!user) return;
+    const fetchNotifs = async () => {
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (data) setNotifications(data);
+    };
+    fetchNotifs();
+  }, [user]);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleMarkAllRead = async () => {
+    if (!user) return;
+    await supabase.from('notifications').update({ read: true }).eq('user_id', user.id);
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -31,9 +50,7 @@ export function AppShell({ children, activeTab = 'My Classes' }: AppShellProps) 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMarkAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-  };
+
 
   return (
     <div>
