@@ -4,9 +4,13 @@ import { FileBrowser } from '../files/FileBrowser';
 import { TeamPanel } from './TeamPanel';
 import { ActivityPanel } from './ActivityPanel';
 import { SubmissionPanel } from './SubmissionPanel';
+import { CommentThread } from '../teacher/CommentThread';
+import { GradeControl } from '../teacher/GradeControl';
 import './GroupWorkspace.css';
 
 export function GroupWorkspace() {
+  const isTeacher = true; // Hardcoded for demo/Milestone 4
+
   const demoFiles = [
     { id: '1', name: 'site-analysis-report.pdf', extension: 'PDF', version: 'v3', size: '4.2 MB', uploader: 'Rhea' },
     { id: '2', name: 'rainfall-data.xlsx', extension: 'XLS', version: 'v1', size: '220 KB', uploader: 'Dev' },
@@ -38,11 +42,13 @@ export function GroupWorkspace() {
           <div>
             <FileBrowser files={demoFiles} />
             <SubmissionPanel status="draft" statusLabel="Draft — not yet submitted" />
+            {isTeacher && <CommentThread />}
           </div>
 
           <div>
             <TeamPanel groupName="Delta Four" members={demoMembers} />
             <ActivityPanel activities={demoActivity} />
+            {isTeacher && <GradeControl currentStatus="draft" />}
           </div>
         </div>
       </div>

@@ -52,7 +52,11 @@ export function MyClasses() {
         
         <div className="class-grid">
           {enrolledClasses.map(c => (
-            <Link key={c.id} to={`/classes/${c.id}/group/1`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link 
+              key={c.id} 
+              to={c.id === '3' ? `/classes/${c.id}/overview` : `/classes/${c.id}/group/1`} 
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <ClassCard
                 term={c.term}
                 className={c.className}
