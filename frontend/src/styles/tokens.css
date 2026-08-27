@@ -1,0 +1,29 @@
+/* d:\math\classvault\frontend\src\styles\tokens.css */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Core Palette */
+  --ink: #1B2420;
+  --ink-soft: #4B564F;
+  --surface: #F1F0EA;
+  --panel: #FFFFFF;
+  --ledger: #21403A;
+  --ledger-hover: #183029;
+  --brass: #B08D57;
+  --hairline: #DEDBD0;
+
+  /* Status Colors */
+  --status-draft: #5B6B73;
+  --status-submitted: #4F7A63;
+  --status-late: #A6553C;
+  --status-reviewed: #21403A;
+  --status-not-started: #9A968C;
+
+  /* Geometry & Shadows */
+  --radius: 7px;
+
+  /* Typography */
+  --font-display: 'Fraunces', serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}

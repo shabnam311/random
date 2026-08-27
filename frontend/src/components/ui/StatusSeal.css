@@ -1,0 +1,33 @@
+/* ---------- Status seal ---------- */
+.seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.seal .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  background: currentColor;
+}
+
+.seal .dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: .45;
+}
+
+.seal.draft .dot, .seal.draft { color: var(--status-draft); }
+.seal.submitted .dot, .seal.submitted { color: var(--status-submitted); }
+.seal.late .dot, .seal.late { color: var(--status-late); }
+.seal.reviewed .dot, .seal.reviewed { color: var(--status-reviewed); }
+.seal.not-started .dot, .seal.not-started { color: var(--status-not-started); }
