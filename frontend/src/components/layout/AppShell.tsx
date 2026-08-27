@@ -62,6 +62,16 @@ export function AppShell({ children, activeTab = 'My Classes' }: AppShellProps) 
             <div className="avatar">RS</div>
             Rhea Sen
           </div>
+          <button 
+            className="btn-text" 
+            style={{ fontSize: '13px', marginLeft: '10px' }}
+            onClick={async () => {
+              const { auth } = await import('../../lib/api/supabase');
+              await auth.logout();
+            }}
+          >
+            Sign out
+          </button>
         </div>
       </div>
       
