@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SubmissionStatus } from '../../components/ui/StatusSeal';
+import type { SubmissionStatus } from '../../components/ui/StatusSeal';
 
 interface GradeControlProps {
   currentGrade?: string;

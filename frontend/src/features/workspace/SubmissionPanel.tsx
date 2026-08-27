@@ -1,5 +1,6 @@
 import React from 'react';
-import { StatusSeal, SubmissionStatus } from '../../components/ui/StatusSeal';
+import { StatusSeal } from '../../components/ui/StatusSeal';
+import type { SubmissionStatus } from '../../components/ui/StatusSeal';
 
 interface SubmissionPanelProps {
   status: SubmissionStatus;

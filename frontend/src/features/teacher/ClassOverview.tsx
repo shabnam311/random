@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppShell } from '../../components/layout/AppShell';
-import { StatusSeal, SubmissionStatus } from '../../components/ui/StatusSeal';
+import { StatusSeal } from '../../components/ui/StatusSeal';
+import type { SubmissionStatus } from '../../components/ui/StatusSeal';
 import { downloadCSV } from '../../lib/export';
 import './ClassOverview.css';
 
