@@ -1,0 +1,17 @@
+.activity-item {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 12.5px;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-item time {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}

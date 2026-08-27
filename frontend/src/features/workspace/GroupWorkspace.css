@@ -1,0 +1,46 @@
+/* ---------- Group workspace ---------- */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+.panel + .panel {
+  margin-top: 20px;
+}
+
+.panel h3 {
+  font-size: 15px;
+  margin-bottom: 14px;
+}
+
+.brief-box {
+  background: var(--surface);
+  border-left: 2px solid var(--brass);
+  padding: 14px 16px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 22px;
+}
+
+.brief-box .eyebrow {
+  margin-bottom: 5px;
+}
+
+.brief-box p {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+@media (max-width: 860px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}

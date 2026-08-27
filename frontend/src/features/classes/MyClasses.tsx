@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AppShell } from '../../components/layout/AppShell';
 import { ClassCard } from './ClassCard';
 
@@ -51,17 +52,18 @@ export function MyClasses() {
         
         <div className="class-grid">
           {enrolledClasses.map(c => (
-            <ClassCard
-              key={c.id}
-              term={c.term}
-              className={c.className}
-              teacherName={c.teacherName}
-              groupName={c.groupName}
-              deadlineLabel={c.deadlineLabel}
-              deadlineTime={c.deadlineTime}
-              status={c.status}
-              statusLabel={c.statusLabel}
-            />
+            <Link key={c.id} to={`/classes/${c.id}/group/1`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <ClassCard
+                term={c.term}
+                className={c.className}
+                teacherName={c.teacherName}
+                groupName={c.groupName}
+                deadlineLabel={c.deadlineLabel}
+                deadlineTime={c.deadlineTime}
+                status={c.status}
+                statusLabel={c.statusLabel}
+              />
+            </Link>
           ))}
         </div>
       </div>

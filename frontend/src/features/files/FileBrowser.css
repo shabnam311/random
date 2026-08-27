@@ -1,0 +1,62 @@
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13.5px;
+}
+
+.file-row:last-child {
+  border-bottom: none;
+}
+
+.file-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.file-row .fname {
+  font-weight: 500;
+  flex: 1;
+}
+
+.file-row .fmeta {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.dropzone {
+  border: 1.5px dashed var(--hairline);
+  border-radius: var(--radius);
+  padding: 26px;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13px;
+  margin-top: 16px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.dropzone:hover {
+  border-color: var(--ledger);
+  background-color: rgba(33, 64, 58, 0.02);
+}
+
+.dropzone strong {
+  color: var(--ink);
+  font-weight: 500;
+}

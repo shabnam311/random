@@ -1,0 +1,20 @@
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13.5px;
+}
+
+.member-row .avatar {
+  width: 26px;
+  height: 26px;
+  font-size: 10.5px;
+}
+
+.member-row .role {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--brass);
+}
