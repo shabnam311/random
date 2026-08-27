@@ -41,11 +41,11 @@ export function GroupWorkspace() {
   }, [groupId]);
 
   if (isLoading) {
-    return <AppShell><div style={{ padding: '40px', textAlign: 'center' }}>Loading workspace...</div></AppShell>;
+    return <AppShell><div aria-live="polite" style={{ padding: '40px', textAlign: 'center' }}>Loading workspace...</div></AppShell>;
   }
 
   if (!group) {
-    return <AppShell><div style={{ padding: '40px', textAlign: 'center' }}>Group not found.</div></AppShell>;
+    return <AppShell><div aria-live="assertive" style={{ padding: '40px', textAlign: 'center' }}>Group not found.</div></AppShell>;
   }
 
   const projectTitle = group.projects?.title || 'Unknown Project';

@@ -63,7 +63,7 @@ export function AuthForm() {
           </p>
 
           {errorMsg && (
-            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px', borderRadius: '6px', marginBottom: '16px', fontSize: '13px' }}>
+            <div aria-live="assertive" style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px', borderRadius: '6px', marginBottom: '16px', fontSize: '13px' }}>
               {errorMsg}
             </div>
           )}

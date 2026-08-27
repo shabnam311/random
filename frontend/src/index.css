@@ -114,3 +114,6 @@ button {
 .page-head h1 {
   font-size: 27px;
 }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+

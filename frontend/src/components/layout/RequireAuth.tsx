@@ -7,7 +7,7 @@ export const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children 
   const location = useLocation();
 
   if (isLoading) {
-    return <div style={{ padding: '40px', textAlign: 'center' }}>Loading session...</div>;
+    return <div aria-live="polite" style={{ padding: '40px', textAlign: 'center' }}>Loading session...</div>;
   }
 
   if (!user) {

@@ -49,7 +49,7 @@ export function MyClasses() {
         </div>
         
         {isLoading ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-soft)' }}>Loading classes...</div>
+          <div aria-live="polite" style={{ padding: '40px', textAlign: 'center', color: 'var(--ink-soft)' }}>Loading classes...</div>
         ) : enrolledClasses.length === 0 ? (
           <div style={{ 
             padding: '60px 20px', 
