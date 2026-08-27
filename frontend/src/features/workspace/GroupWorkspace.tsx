@@ -11,23 +11,9 @@ import './GroupWorkspace.css';
 export function GroupWorkspace() {
   const isTeacher = true; // Hardcoded for demo/Milestone 4
 
-  const demoFiles = [
-    { id: '1', name: 'site-analysis-report.pdf', extension: 'PDF', version: 'v3', size: '4.2 MB', uploader: 'Rhea' },
-    { id: '2', name: 'rainfall-data.xlsx', extension: 'XLS', version: 'v1', size: '220 KB', uploader: 'Dev' },
-    { id: '3', name: 'site-plan-diagram.png', extension: 'PNG', version: 'v2', size: '1.8 MB', uploader: 'Amara' },
-  ];
-
-  const demoMembers = [
-    { id: '1', initials: 'RS', name: 'Rhea Sen', isLeader: true },
-    { id: '2', initials: 'DP', name: 'Dev Prabhu' },
-    { id: '3', initials: 'AN', name: 'Amara Ng' },
-  ];
-
-  const demoActivity = [
-    { id: '1', timeLabel: '2h ago', description: 'Amara replaced site-plan-diagram.png' },
-    { id: '2', timeLabel: '1d ago', description: 'Dev uploaded rainfall-data.xlsx' },
-    { id: '3', timeLabel: '2d ago', description: 'Rhea created the group' },
-  ];
+  const demoFiles: any[] = [];
+  const demoMembers: any[] = [];
+  const demoActivity: any[] = [];
 
   return (
     <AppShell activeTab="Urban Water Systems">

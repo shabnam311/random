@@ -19,13 +19,7 @@ export function ClassOverview() {
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const groups: GroupData[] = [
-    { id: '1', name: 'Delta Four', members: 'Rhea Sen, Dev Prabhu, Amara Ng', status: 'draft', fileCount: 3, lastActivity: '2 hrs ago' },
-    { id: '2', name: 'Riverbank Collective', members: 'Owen Cole, Priya Iyer', status: 'submitted', fileCount: 6, lastActivity: '1 day ago' },
-    { id: '3', name: 'Basin Works', members: 'Malik Osei, Freya Lindqvist, Noor Haddad', status: 'late', fileCount: 4, lastActivity: '4 hrs ago' },
-    { id: '4', name: 'Culvert Six', members: 'Théo Marchand', status: 'not-started', fileCount: 0, lastActivity: '—' },
-    { id: '5', name: 'Greywater Studio', members: 'Ines Bauer, Ravi Chandran', status: 'reviewed', statusLabel: 'Reviewed · B+', fileCount: 7, lastActivity: '3 days ago' },
-  ];
+  const [groups, setGroups] = useState<GroupData[]>([]);
 
   const handleExport = () => {
     const exportData = groups.map(g => ({

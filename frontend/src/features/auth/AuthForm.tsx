@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../../lib/api/supabase';
 import './AuthForm.css';
 
 type AuthMode = 'login' | 'signup';
@@ -13,20 +14,34 @@ export function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate auth then redirect to dashboard
-    setTimeout(() => {
+    setErrorMsg('');
+    
+    try {
+      if (mode === 'signup') {
+        await auth.signup(email, password, name, role);
+        // Supabase might require email verification, but we'll try to log them in or redirect
+        alert('Account created! You can now log in.');
+        setMode('login');
+      } else {
+        await auth.login(email, password);
+        navigate('/classes');
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'An error occurred during authentication.');
+    } finally {
       setIsLoading(false);
-      navigate('/classes');
-    }, 800);
+    }
   };
 
   const toggleMode = (e: React.MouseEvent) => {
     e.preventDefault();
+    setErrorMsg('');
     setMode(mode === 'login' ? 'signup' : 'login');
   };
 
@@ -37,11 +52,6 @@ export function AuthForm() {
         <div>
           <h2>One record per group. No lost submissions, ever.</h2>
           <p>A scoped workspace for class projects — students submit and version their files, teachers see every group's status at a glance.</p>
-          <div style={{ marginTop: '40px' }}>
-            <div className="ledger-row"><span>ENV-DESIGN / GROUP-04</span><span>SUBMITTED · ON TIME</span></div>
-            <div className="ledger-row"><span>ENV-DESIGN / GROUP-07</span><span>DRAFT</span></div>
-            <div className="ledger-row"><span>ENV-DESIGN / GROUP-11</span><span>LATE</span></div>
-          </div>
         </div>
       </div>
       <div className="login-right">
@@ -51,6 +61,12 @@ export function AuthForm() {
           <p className="sub">
             {mode === 'login' ? 'Enter your details to open your classes.' : 'Sign up to manage your classroom workspace.'}
           </p>
+
+          {errorMsg && (
+            <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '10px', borderRadius: '6px', marginBottom: '16px', fontSize: '13px' }}>
+              {errorMsg}
+            </div>
+          )}
           
           <div className="role-toggle">
             <button 
