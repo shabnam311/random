@@ -25,9 +25,24 @@ export function MyClasses() {
     async function loadClasses() {
       try {
         const data = await classesApi.getMyClasses();
-        // Here we would map the real Supabase data to our UI interface.
-        // For a brand new user, it will be empty!
-        setEnrolledClasses(data ? (data as any) : []);
+        if (data) {
+          const mapped = data.map((membership: any) => {
+            const cls = membership.classes;
+            return {
+              id: cls.id,
+              term: cls.term || 'Current Term',
+              className: cls.name || 'Untitled Class',
+              teacherName: cls.teacher?.name || 'Unknown Teacher',
+              groupName: membership.role_in_class === 'teacher' ? 'Teacher View' : 'My Group',
+              deadlineLabel: 'Next Deadline',
+              deadlineTime: 'TBD',
+              status: 'draft' as SubmissionStatus
+            };
+          });
+          setEnrolledClasses(mapped);
+        } else {
+          setEnrolledClasses([]);
+        }
       } catch (err) {
         console.error('Failed to load classes', err);
       } finally {
